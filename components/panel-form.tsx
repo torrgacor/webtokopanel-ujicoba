@@ -15,7 +15,7 @@ import { Check, Info, User, Mail, Package, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { ConfirmationDialog } from "./confirmation-dialog"
 import { StatusModal } from "./status-modal"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 
 export default function PanelForm() {
   const [username, setUsername] = useState("")
@@ -120,7 +120,7 @@ export default function PanelForm() {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="space-y-6 pb-24">
+      <form onSubmit={handleSubmit} className="space-y-6 pb-6">
         <div className="space-y-2">
           <Label htmlFor="username" className="text-base font-medium flex items-center gap-2">
             <User className="w-4 h-4 text-red-500" />
@@ -169,105 +169,103 @@ export default function PanelForm() {
           </Label>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {plans.map((plan) => (
-              <motion.div
-                key={plan.id}
-                onClick={() => setSelectedPlan(plan.id)}
-                className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
-                  selectedPlan === plan.id
-                    ? "bg-red-500/10 border-red-500 shadow-lg shadow-red-500/20"
-                    : "bg-dark-500 border-dark-300 hover:border-red-500/50"
-                }`}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                {selectedPlan === plan.id && (
-                  <div className="absolute top-2 right-2 bg-red-500 rounded-full p-1">
-                    <Check className="w-4 h-4 text-white" />
+              <motion.div key={plan.id}>
+                <motion.div
+                  onClick={() => setSelectedPlan(plan.id)}
+                  className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
+                    selectedPlan === plan.id
+                      ? "bg-red-500/10 border-red-500 shadow-lg shadow-red-500/20"
+                      : "bg-dark-500 border-dark-300 hover:border-red-500/50"
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {selectedPlan === plan.id && (
+                    <div className="absolute top-2 right-2 bg-red-500 rounded-full p-1">
+                      <Check className="w-4 h-4 text-white" />
+                    </div>
+                  )}
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-medium text-white text-sm flex-1 pr-2">{plan.name}</h3>
                   </div>
+                  <div className="text-red-400 font-bold mb-2">{formatRupiah(plan.price)}</div>
+                  <div className="text-xs text-gray-400 space-y-1 mb-3">
+                    <div>💾 RAM: {plan.memory} MB</div>
+                    <div>🗄️ Disk: {plan.disk} MB</div>
+                    <div>⚙️ CPU: {plan.cpu}%</div>
+                  </div>
+                  <p className="text-xs text-gray-300 line-clamp-2">{plan.description}</p>
+                </motion.div>
+
+                {selectedPlan === plan.id && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="mt-3 bg-dark-500 p-4 rounded-lg border border-red-500/50"
+                  >
+                    <h4 className="font-medium text-white mb-3 flex items-center">
+                      <Info className="w-4 h-4 mr-2 text-red-500" />
+                      Detail Paket
+                    </h4>
+                    <div className="grid grid-cols-2 gap-3 text-sm mb-3">
+                      <div className="text-gray-400">RAM:</div>
+                      <div className="font-medium text-white">{plan.memory} MB</div>
+                      <div className="text-gray-400">Disk:</div>
+                      <div className="font-medium text-white">{plan.disk} MB</div>
+                      <div className="text-gray-400">CPU:</div>
+                      <div className="font-medium text-white">{plan.cpu}%</div>
+                      <div className="text-gray-400">Harga:</div>
+                      <div className="font-medium text-red-400">{formatRupiah(plan.price)}</div>
+                    </div>
+                    <p className="text-sm text-gray-400 mb-3">{plan.description}</p>
+                    <div>
+                      <h5 className="text-sm font-medium text-white mb-2">Fitur:</h5>
+                      <ul className="space-y-1">
+                        {plan.features.map((feature, index) => (
+                          <li key={index} className="flex items-start text-sm">
+                            <Check className="w-4 h-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                            <span className="text-gray-300">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </motion.div>
                 )}
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-medium text-white text-sm flex-1 pr-2">{plan.name}</h3>
-                </div>
-                <div className="text-red-400 font-bold mb-2">{formatRupiah(plan.price)}</div>
-                <div className="text-xs text-gray-400 space-y-1 mb-3">
-                  <div>💾 RAM: {plan.memory} MB</div>
-                  <div>🗄️ Disk: {plan.disk} MB</div>
-                  <div>⚙️ CPU: {plan.cpu}%</div>
-                </div>
-                <p className="text-xs text-gray-300 line-clamp-2">{plan.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
-
-        {selectedPlan && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-            className="bg-dark-500 p-5 rounded-lg border border-dark-300"
-          >
-            <h3 className="font-medium text-white mb-3 flex items-center">
-              <Info className="w-4 h-4 mr-2 text-red-500" />
-              Detail Paket
-            </h3>
-            {(() => {
-              const plan = plans.find((p) => p.id === selectedPlan)
-              if (!plan) return null
-
-              return (
-                <>
-                  <div className="grid grid-cols-2 gap-3 text-sm mb-4">
-                    <div className="text-gray-400">RAM:</div>
-                    <div className="font-medium text-white">{plan.memory} MB</div>
-                    <div className="text-gray-400">Disk:</div>
-                    <div className="font-medium text-white">{plan.disk} MB</div>
-                    <div className="text-gray-400">CPU:</div>
-                    <div className="font-medium text-white">{plan.cpu}%</div>
-                    <div className="text-gray-400">Harga:</div>
-                    <div className="font-medium text-red-400">{formatRupiah(plan.price)}</div>
-                  </div>
-                  <p className="text-sm text-gray-400">{plan.description}</p>
-                  <div className="mt-3">
-                    <h4 className="text-sm font-medium text-white mb-2">Fitur:</h4>
-                    <ul className="space-y-1">
-                      {plan.features.map((feature, index) => (
-                        <li key={index} className="flex items-start text-sm">
-                          <Check className="w-4 h-4 text-red-500 mr-2 mt-0.5" />
-                          <span className="text-gray-300">{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </>
-              )
-            })()}
-          </motion.div>
-        )}
       </form>
 
-      {/* Floating Button */}
-      <motion.div
-        className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-dark-600 via-dark-600 to-transparent pt-4 pb-6 px-4 z-40"
-        initial={{ y: 100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <Button
-          onClick={handleSubmit}
-          className="w-full bg-gradient-to-r from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 h-14 text-lg font-medium transition-all duration-300 ease-in-out transform hover:scale-[1.02] shadow-2xl"
-          disabled={isValidating}
-        >
-          {isValidating ? (
-            <>
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              Memeriksa...
-            </>
-          ) : (
-            "Beli Sekarang"
-          )}
-        </Button>
-      </motion.div>
+      {/* Floating Button - Only show when plan is selected */}
+      <AnimatePresence>
+        {selectedPlan && (
+          <motion.div
+            className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-dark-600 via-dark-600 to-transparent pt-4 pb-6 px-4 z-40"
+            initial={{ y: 100 }}
+            animate={{ y: 0 }}
+            exit={{ y: 100 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Button
+              onClick={handleSubmit}
+              className="w-full bg-gradient-to-r from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 h-14 text-lg font-medium transition-all duration-300 ease-in-out transform hover:scale-[1.02] shadow-2xl"
+              disabled={isValidating}
+            >
+              {isValidating ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Memeriksa...
+                </>
+              ) : (
+                "Beli Sekarang"
+              )}
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <StatusModal
         isOpen={showModal}

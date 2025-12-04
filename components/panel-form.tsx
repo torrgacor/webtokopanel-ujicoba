@@ -169,19 +169,21 @@ export default function PanelForm() {
           </Label>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {plans.map((plan) => (
-              <motion.div key={plan.id}>
-                <motion.div
-                  onClick={() => setSelectedPlan(plan.id)}
-                  className={`relative p-4 rounded-lg border-2 cursor-pointer transition-all duration-300 ${
-                    selectedPlan === plan.id
-                      ? "bg-red-500/10 border-red-500 shadow-lg shadow-red-500/20"
-                      : "bg-dark-500 border-dark-300 hover:border-red-500/50"
-                  }`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
+              <motion.div
+                key={plan.id}
+                onClick={() => setSelectedPlan(plan.id)}
+                layout
+                className={`relative rounded-lg border-2 cursor-pointer transition-all duration-300 overflow-hidden ${
+                  selectedPlan === plan.id
+                    ? "bg-red-500/10 border-red-500 shadow-lg shadow-red-500/20 col-span-1 md:col-span-2"
+                    : "bg-dark-500 border-dark-300 hover:border-red-500/50 p-4"
+                }`}
+                whileHover={selectedPlan !== plan.id ? { scale: 1.02 } : {}}
+                whileTap={selectedPlan !== plan.id ? { scale: 0.98 } : {}}
+              >
+                <div className={selectedPlan === plan.id ? "p-4" : ""}>
                   {selectedPlan === plan.id && (
-                    <div className="absolute top-2 right-2 bg-red-500 rounded-full p-1">
+                    <div className="absolute top-4 right-4 bg-red-500 rounded-full p-1 z-10">
                       <Check className="w-4 h-4 text-white" />
                     </div>
                   )}
@@ -195,44 +197,44 @@ export default function PanelForm() {
                     <div>⚙️ CPU: {plan.cpu}%</div>
                   </div>
                   <p className="text-xs text-gray-300 line-clamp-2">{plan.description}</p>
-                </motion.div>
 
-                {selectedPlan === plan.id && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="mt-3 bg-dark-500 p-4 rounded-lg border border-red-500/50"
-                  >
-                    <h4 className="font-medium text-white mb-3 flex items-center">
-                      <Info className="w-4 h-4 mr-2 text-red-500" />
-                      Detail Paket
-                    </h4>
-                    <div className="grid grid-cols-2 gap-3 text-sm mb-3">
-                      <div className="text-gray-400">RAM:</div>
-                      <div className="font-medium text-white">{plan.memory} MB</div>
-                      <div className="text-gray-400">Disk:</div>
-                      <div className="font-medium text-white">{plan.disk} MB</div>
-                      <div className="text-gray-400">CPU:</div>
-                      <div className="font-medium text-white">{plan.cpu}%</div>
-                      <div className="text-gray-400">Harga:</div>
-                      <div className="font-medium text-red-400">{formatRupiah(plan.price)}</div>
-                    </div>
-                    <p className="text-sm text-gray-400 mb-3">{plan.description}</p>
-                    <div>
-                      <h5 className="text-sm font-medium text-white mb-2">Fitur:</h5>
-                      <ul className="space-y-1">
-                        {plan.features.map((feature, index) => (
-                          <li key={index} className="flex items-start text-sm">
-                            <Check className="w-4 h-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
-                            <span className="text-gray-300">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </motion.div>
-                )}
+                  {selectedPlan === plan.id && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="mt-4 pt-4 border-t border-red-500/30"
+                    >
+                      <h4 className="font-medium text-white mb-3 flex items-center">
+                        <Info className="w-4 h-4 mr-2 text-red-500" />
+                        Detail Paket Lengkap
+                      </h4>
+                      <div className="grid grid-cols-2 gap-3 text-sm mb-3">
+                        <div className="text-gray-400">RAM:</div>
+                        <div className="font-medium text-white">{plan.memory} MB</div>
+                        <div className="text-gray-400">Disk:</div>
+                        <div className="font-medium text-white">{plan.disk} MB</div>
+                        <div className="text-gray-400">CPU:</div>
+                        <div className="font-medium text-white">{plan.cpu}%</div>
+                        <div className="text-gray-400">Harga:</div>
+                        <div className="font-medium text-red-400">{formatRupiah(plan.price)}</div>
+                      </div>
+                      <p className="text-sm text-gray-400 mb-3">{plan.description}</p>
+                      <div>
+                        <h5 className="text-sm font-medium text-white mb-2">Fitur Paket:</h5>
+                        <ul className="space-y-1">
+                          {plan.features.map((feature, index) => (
+                            <li key={index} className="flex items-start text-sm">
+                              <Check className="w-4 h-4 text-red-500 mr-2 mt-0.5 flex-shrink-0" />
+                              <span className="text-gray-300">{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </motion.div>
+                  )}
+                </div>
               </motion.div>
             ))}
           </div>

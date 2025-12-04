@@ -120,7 +120,7 @@ export default function PanelForm() {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6 pb-24">
         <div className="space-y-2">
           <Label htmlFor="username" className="text-base font-medium flex items-center gap-2">
             <User className="w-4 h-4 text-red-500" />
@@ -244,10 +244,18 @@ export default function PanelForm() {
             })()}
           </motion.div>
         )}
+      </form>
 
+      {/* Floating Button */}
+      <motion.div
+        className="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-dark-600 via-dark-600 to-transparent pt-4 pb-6 px-4 z-40"
+        initial={{ y: 100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         <Button
-          type="submit"
-          className="w-full bg-gradient-to-r from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 h-14 text-lg font-medium transition-all duration-300 ease-in-out transform hover:scale-[1.02] shadow-lg"
+          onClick={handleSubmit}
+          className="w-full bg-gradient-to-r from-red-600 to-red-800 hover:from-red-700 hover:to-red-900 h-14 text-lg font-medium transition-all duration-300 ease-in-out transform hover:scale-[1.02] shadow-2xl"
           disabled={isValidating}
         >
           {isValidating ? (
@@ -259,7 +267,7 @@ export default function PanelForm() {
             "Beli Sekarang"
           )}
         </Button>
-      </form>
+      </motion.div>
 
       <StatusModal
         isOpen={showModal}

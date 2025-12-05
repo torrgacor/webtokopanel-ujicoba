@@ -21,6 +21,7 @@ export default function PanelForm() {
   const [username, setUsername] = useState("")
   const [email, setEmail] = useState("")
   const [selectedPlan, setSelectedPlan] = useState("")
+  const [serverType, setServerType] = useState<"private" | "public">("private")
   const [isLoading, setIsLoading] = useState(false)
   const [isValidating, setIsValidating] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
@@ -118,6 +119,9 @@ export default function PanelForm() {
     }
   }
 
+  // Filter plans by server type
+  const filteredPlans = plans.filter((p) => (p as any).type === serverType)
+
   return (
     <>
       <form onSubmit={handleSubmit} className="space-y-6 pb-6">
@@ -163,12 +167,48 @@ export default function PanelForm() {
         </div>
 
         <div className="space-y-3">
-          <Label className="text-base font-medium flex items-center gap-2">
-            <Package className="w-4 h-4 text-red-500" />
-            Pilih Paket
-          </Label>
+          <div className="flex items-center justify-between">
+            <Label className="text-base font-medium flex items-center gap-2">
+              <Package className="w-4 h-4 text-red-500" />
+              Pilih Paket
+            </Label>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const next = "private"
+                  setServerType(next)
+                  // clear selection if not available in new type
+                  if (!plans.find((p) => (p as any).type === next && p.id === selectedPlan)) setSelectedPlan("")
+                }}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition ${
+                  serverType === "private" ? "bg-red-600 text-white" : "bg-dark-500 text-gray-300"
+                }`}
+              >
+                Private
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const next = "public"
+                  setServerType(next)
+                  if (!plans.find((p) => (p as any).type === next && p.id === selectedPlan)) setSelectedPlan("")
+                }}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition ${
+                  serverType === "public" ? "bg-red-600 text-white" : "bg-dark-500 text-gray-300"
+                }`}
+              >
+                Public
+              </button>
+            </div>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {plans.map((plan) => (
+            {filteredPlans.length === 0 ? (
+              <div className="col-span-1 md:col-span-2 text-center text-gray-400 py-6">
+                Tidak ada paket untuk tipe server ini.
+              </div>
+            ) : (
+              filteredPlans.map((plan) => (
               <motion.div
                 key={plan.id}
                 onClick={() => setSelectedPlan(plan.id)}

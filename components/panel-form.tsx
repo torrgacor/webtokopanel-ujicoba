@@ -53,6 +53,30 @@ export default function PanelForm() {
     }
   }, [serverType])
 
+  // Load/save selectedPlan to localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("selectedPlan")
+      if (saved) {
+        const plan = plans.find((p) => p.id === saved)
+        if (plan && (plan as any).type === serverType) {
+          setSelectedPlan(saved)
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+  }, [serverType])
+
+  useEffect(() => {
+    try {
+      if (selectedPlan) localStorage.setItem("selectedPlan", selectedPlan)
+      else localStorage.removeItem("selectedPlan")
+    } catch (e) {
+      // ignore
+    }
+  }, [selectedPlan])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -196,13 +220,14 @@ export default function PanelForm() {
             <div className="flex items-center gap-2">
               <button
                 type="button"
+                aria-pressed={serverType === "private"}
                 onClick={() => {
                   const next = "private"
                   setServerType(next)
                   // clear selection if not available in new type
                   if (!plans.find((p) => (p as any).type === next && p.id === selectedPlan)) setSelectedPlan("")
                 }}
-                className={`px-3 py-1 rounded-md text-sm font-medium transition ${
+                className={`px-3 py-1 rounded-md text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-red-500 ${
                   serverType === "private" ? "bg-red-600 text-white" : "bg-dark-500 text-gray-300"
                 }`}
               >
@@ -210,12 +235,13 @@ export default function PanelForm() {
               </button>
               <button
                 type="button"
+                aria-pressed={serverType === "public"}
                 onClick={() => {
                   const next = "public"
                   setServerType(next)
                   if (!plans.find((p) => (p as any).type === next && p.id === selectedPlan)) setSelectedPlan("")
                 }}
-                className={`px-3 py-1 rounded-md text-sm font-medium transition ${
+                className={`px-3 py-1 rounded-md text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-red-500 ${
                   serverType === "public" ? "bg-red-600 text-white" : "bg-dark-500 text-gray-300"
                 }`}
               >
@@ -234,7 +260,16 @@ export default function PanelForm() {
               filteredPlans.map((plan) => (
               <motion.div
                 key={plan.id}
+                role="button"
+                tabIndex={0}
+                aria-pressed={selectedPlan === plan.id}
                 onClick={() => setSelectedPlan(plan.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault()
+                    setSelectedPlan(plan.id)
+                  }
+                }}
                 layout
                 className={`relative rounded-lg border-2 cursor-pointer transition-all duration-300 overflow-hidden ${
                   selectedPlan === plan.id

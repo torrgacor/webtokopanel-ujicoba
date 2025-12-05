@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -31,6 +31,27 @@ export default function PanelForm() {
   const [modalMessage, setModalMessage] = useState("")
   const { toast } = useToast()
   const router = useRouter()
+
+  // Load saved server type from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("serverType")
+      if (saved === "private" || saved === "public") {
+        setServerType(saved)
+      }
+    } catch (e) {
+      // ignore (SSR safety)
+    }
+  }, [])
+
+  // Persist serverType when it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem("serverType", serverType)
+    } catch (e) {
+      // ignore
+    }
+  }, [serverType])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -202,6 +223,8 @@ export default function PanelForm() {
               </button>
             </div>
           </div>
+          <p className="text-xs text-gray-400 mt-2">Pilih tipe server: <span className="font-medium text-white">Private</span> = server khusus (lebih aman), <span className="font-medium text-white">Public</span> = server bersama (lebih murah).</p>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {filteredPlans.length === 0 ? (
               <div className="col-span-1 md:col-span-2 text-center text-gray-400 py-6">
@@ -222,6 +245,14 @@ export default function PanelForm() {
                 whileTap={selectedPlan !== plan.id ? { scale: 0.98 } : {}}
               >
                 <div className={selectedPlan === plan.id ? "p-4" : ""}>
+                  {/* Type badge */}
+                  <div className="absolute top-3 left-3 z-20">
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                      (plan as any).type === "private" ? "bg-purple-600 text-white" : "bg-green-600 text-white"
+                    }`}>
+                      {(plan as any).type === "private" ? "Private" : "Public"}
+                    </span>
+                  </div>
                   {selectedPlan === plan.id && (
                     <div className="absolute top-4 right-4 bg-red-500 rounded-full p-1 z-10">
                       <Check className="w-4 h-4 text-white" />

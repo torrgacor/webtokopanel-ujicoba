@@ -290,7 +290,7 @@ export default function PanelForm() {
                       accessType === "regular" ? "bg-blue-600 text-white" : "bg-dark-500 text-gray-300"
                     }`}
                   >
-                    Akses Biasa
+                    Panel Bot
                   </button>
                   <button
                     type="button"

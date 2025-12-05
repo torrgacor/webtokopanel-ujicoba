@@ -451,6 +451,8 @@ export default function PanelForm() {
         planId={selectedPlan}
         onConfirm={handleConfirm}
         isLoading={isLoading}
+        serverType={serverType}
+        accessType={accessType}
       />
     </>
   )

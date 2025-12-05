@@ -18,9 +18,11 @@ interface ConfirmationDialogProps {
   planId: string
   onConfirm: () => void
   isLoading: boolean
+  serverType?: "private" | "public"
+  accessType?: "regular" | "admin"
 }
 
-export function ConfirmationDialog({ open, onOpenChange, planId, onConfirm, isLoading }: ConfirmationDialogProps) {
+export function ConfirmationDialog({ open, onOpenChange, planId, onConfirm, isLoading, serverType, accessType }: ConfirmationDialogProps) {
   const plan = plans.find((p) => p.id === planId)
 
   if (!plan) return null
@@ -38,6 +40,10 @@ export function ConfirmationDialog({ open, onOpenChange, planId, onConfirm, isLo
           <div className="bg-dark-500 p-4 rounded-lg border border-dark-300">
             <h3 className="font-medium text-white mb-2">Detail Paket</h3>
             <div className="grid grid-cols-2 gap-2 text-sm">
+              <div className="text-gray-400">Tipe Server:</div>
+              <div className="font-medium text-white">{serverType === "private" ? "Private" : "Public"}</div>
+              <div className="text-gray-400">Akses Panel:</div>
+              <div className="font-medium text-white">{accessType === "regular" ? "Akses Biasa" : "Akses Admin"}</div>
               <div className="text-gray-400">RAM:</div>
               <div className="font-medium text-white">{plan.memory} MB</div>
               <div className="text-gray-400">Disk:</div>

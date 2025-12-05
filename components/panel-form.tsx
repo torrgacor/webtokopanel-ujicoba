@@ -266,7 +266,8 @@ export default function PanelForm() {
               </button>
             </div>
           </div>
-          <p className="text-xs text-gray-400 mt-2">Pilih tipe server: <span className="font-medium text-white">Private</span> = server khusus (lebih aman), <span className="font-medium text-white">Public</span> = server bersama (lebih murah).</p>
+          <p className="text-xs text-gray-400 mt-2"><span className="font-medium text-white">Private</span> = server khusus (lebih aman)</p>
+          <p className="text-xs text-gray-400 mt-2"><span className="font-medium text-white">Public</span> = server bersama (lebih murah)</p>
           
           {serverType === "public" && (
             <>
@@ -307,7 +308,8 @@ export default function PanelForm() {
                   </button>
                 </div>
               </div>
-              <p className="text-xs text-gray-400 mt-2">Pilih akses: <span className="font-medium text-white">Akses Biasa</span> = panel standar, <span className="font-medium text-white">Akses Admin</span> = kelola multi user + fitur admin.</p>
+              <p className="text-xs text-gray-400 mt-2"><span className="font-medium text-white">Akses Biasa</span> = panel untuk bot</p>
+              <p className="text-xs text-gray-400 mt-2"><span className="font-medium text-white">Akses Admin</span> = kelola multi user + fitur admin</p>
             </>
           )}
           </div>

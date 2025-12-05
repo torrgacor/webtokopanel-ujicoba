@@ -341,21 +341,19 @@ export default function PanelForm() {
                     whileTap={selectedPlan !== plan.id ? { scale: 0.98 } : {}}
                   >
                     <div className={selectedPlan === plan.id ? "p-4" : ""}>
-                      {/* Type badge */}
-                      <div className="absolute top-3 left-3 z-20">
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                          plan.type === "private" ? "bg-purple-600 text-white" : "bg-green-600 text-white"
-                        }`}>
-                          {plan.type === "private" ? "Private" : "Public"}
-                        </span>
-                      </div>
+                      {/* Type badge (moved inline next to name) */}
                       {selectedPlan === plan.id && (
                         <div className="absolute top-4 right-4 bg-red-500 rounded-full p-1 z-10">
                           <Check className="w-4 h-4 text-white" />
                         </div>
                       )}
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-medium text-white text-sm flex-1 pr-2">{plan.name}</h3>
+                        <h3 className="font-medium text-white text-sm flex-1 pr-2 flex items-center gap-2">
+                          <span>{plan.name}</span>
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                            plan.type === "private" ? "bg-purple-600 text-white" : "bg-green-600 text-white"
+                          }`}>{plan.type === "private" ? "Private" : "Public"}</span>
+                        </h3>
                       </div>
                       <div className="text-red-400 font-bold mb-2">{formatRupiah(plan.price)}</div>
                       <div className="text-xs text-gray-400 space-y-1 mb-3">

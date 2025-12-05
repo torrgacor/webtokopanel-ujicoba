@@ -251,13 +251,21 @@ export default function PanelForm() {
           </div>
           <p className="text-xs text-gray-400 mt-2">Pilih tipe server: <span className="font-medium text-white">Private</span> = server khusus (lebih aman), <span className="font-medium text-white">Public</span> = server bersama (lebih murah).</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {filteredPlans.length === 0 ? (
-              <div className="col-span-1 md:col-span-2 text-center text-gray-400 py-6">
-                Tidak ada paket untuk tipe server ini.
-              </div>
-            ) : (
-              filteredPlans.map((plan) => (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={serverType}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="grid grid-cols-1 md:grid-cols-2 gap-3"
+            >
+              {filteredPlans.length === 0 ? (
+                <div className="col-span-1 md:col-span-2 text-center text-gray-400 py-6">
+                  Tidak ada paket untuk tipe server ini.
+                </div>
+              ) : (
+                filteredPlans.map((plan) => (
               <motion.div
                 key={plan.id}
                 role="button"
@@ -343,7 +351,8 @@ export default function PanelForm() {
                 </div>
               </motion.div>
             ))}
-          </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </form>
 

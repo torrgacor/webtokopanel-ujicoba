@@ -1,11 +1,23 @@
 export const pterodactylConfig = {
-  domain: "https://tokopanel157-private216.mts4you.biz.id",
-  apiKey: "ptla_ms1X6SBb1SZQcSJrtX4xx16O9FwZHWBXbpsEPknrke1",
-  nests: "5", 
+  // Private Server Configuration
+  private: {
+    domain: "https://tokopanel157-private216.mts4you.biz.id",
+    apiKey: "ptla_ms1X6SBb1SZQcSJrtX4xx16O9FwZHWBXbpsEPknrke1",
+    nests: "5", 
+    egg: "15", 
+    location: "1", // location panel 
+  },
+  // Public Server Configuration
+  public: {
+    domain: "https://tokopanel157-public216.mts4you.biz.id", // ubah sesuai domain public panel
+    apiKey: "ptla_YOUR_PUBLIC_API_KEY_HERE", // ubah sesuai public API key
+    nests: "5", 
+    egg: "15", 
+    location: "1", // location panel 
+  },
+  // Shared settings (not needed if different)
   nestsGame: "2", // ga usah di isi, ga perlu
-  egg: "15", 
   eggSamp: "16", // ga usah di isi, ga perlu
-  location: "1", // location panel 
 }
 
 export const appConfig = {

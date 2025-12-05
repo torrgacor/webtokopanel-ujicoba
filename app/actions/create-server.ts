@@ -2,7 +2,7 @@
 
 import { plans } from "@/data/plans"
 import clientPromise from "@/lib/mongodb"
-import { appConfig } from "@/data/config"
+import { appConfig, pterodactylConfig } from "@/data/config"
 import type { ObjectId } from "mongodb"
 
 export interface ServerData {
@@ -41,6 +41,10 @@ export async function createServer(
     const plan = plans.find((p) => p.id === planId && p.type === serverType && p.access === accessType)
     if (!plan) throw new Error("Plan tidak valid atau tidak ditemukan")
 
+    // Get appropriate Pterodactyl config based on server type
+    const ptConfig = serverType === "private" ? pterodactylConfig.private : pterodactylConfig.public
+    if (!ptConfig) throw new Error(`Konfigurasi Pterodactyl untuk server ${serverType} tidak ditemukan`)
+
     const client = await clientPromise
     const db = client.db("webtokopanel")
     const serversCollection = db.collection<ServerData>("servers")
@@ -75,9 +79,13 @@ export async function createServer(
     }
 
     // TODO: Call Pterodactyl API to actually provision the server
+    // Use ptConfig which contains the correct API key and domain for the server type:
+    // - ptConfig.domain: The Pterodactyl panel URL (different for private/public)
+    // - ptConfig.apiKey: The API key for that Pterodactyl instance
+    // - ptConfig.nests, ptConfig.egg, ptConfig.location: Server provisioning settings
     // Once the API call succeeds, update status to "creating" or "active"
     // Example:
-    // const pterodactylResult = await createServerInPterodactyl(serverData)
+    // const pterodactylResult = await createServerInPterodactyl(serverData, ptConfig)
     // await serversCollection.updateOne(
     //   { _id: result.insertedId },
     //   {

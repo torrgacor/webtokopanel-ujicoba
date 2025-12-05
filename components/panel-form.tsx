@@ -22,6 +22,7 @@ export default function PanelForm() {
   const [email, setEmail] = useState("")
   const [selectedPlan, setSelectedPlan] = useState("")
   const [serverType, setServerType] = useState<"private" | "public">("private")
+  const [accessType, setAccessType] = useState<"regular" | "admin">("regular")
   const [isLoading, setIsLoading] = useState(false)
   const [isValidating, setIsValidating] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
@@ -32,12 +33,16 @@ export default function PanelForm() {
   const { toast } = useToast()
   const router = useRouter()
 
-  // Load saved server type from localStorage on mount
+  // Load saved server type and access type from localStorage on mount
   useEffect(() => {
     try {
-      const saved = localStorage.getItem("serverType")
-      if (saved === "private" || saved === "public") {
-        setServerType(saved)
+      const savedType = localStorage.getItem("serverType")
+      if (savedType === "private" || savedType === "public") {
+        setServerType(savedType)
+      }
+      const savedAccess = localStorage.getItem("accessType")
+      if (savedAccess === "regular" || savedAccess === "admin") {
+        setAccessType(savedAccess)
       }
     } catch (e) {
       // ignore (SSR safety)
@@ -52,6 +57,15 @@ export default function PanelForm() {
       // ignore
     }
   }, [serverType])
+
+  // Persist accessType when it changes
+  useEffect(() => {
+    try {
+      localStorage.setItem("accessType", accessType)
+    } catch (e) {
+      // ignore
+    }
+  }, [accessType])
 
   // Load/save selectedPlan to localStorage
   useEffect(() => {
@@ -164,8 +178,8 @@ export default function PanelForm() {
     }
   }
 
-  // Filter plans by server type
-  const filteredPlans = plans.filter((p) => (p as any).type === serverType)
+  // Filter plans by server type and access type
+  const filteredPlans = plans.filter((p) => p.type === serverType && p.access === accessType)
 
   return (
     <>
@@ -225,7 +239,7 @@ export default function PanelForm() {
                   const next = "private"
                   setServerType(next)
                   // clear selection if not available in new type
-                  if (!plans.find((p) => (p as any).type === next && p.id === selectedPlan)) setSelectedPlan("")
+                  if (!plans.find((p) => p.type === next && p.access === accessType && p.id === selectedPlan)) setSelectedPlan("")
                 }}
                 className={`px-3 py-1 rounded-md text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-red-500 ${
                   serverType === "private" ? "bg-red-600 text-white" : "bg-dark-500 text-gray-300"
@@ -239,7 +253,7 @@ export default function PanelForm() {
                 onClick={() => {
                   const next = "public"
                   setServerType(next)
-                  if (!plans.find((p) => (p as any).type === next && p.id === selectedPlan)) setSelectedPlan("")
+                  if (!plans.find((p) => p.type === next && p.access === accessType && p.id === selectedPlan)) setSelectedPlan("")
                 }}
                 className={`px-3 py-1 rounded-md text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-red-500 ${
                   serverType === "public" ? "bg-red-600 text-white" : "bg-dark-500 text-gray-300"
@@ -250,6 +264,45 @@ export default function PanelForm() {
             </div>
           </div>
           <p className="text-xs text-gray-400 mt-2">Pilih tipe server: <span className="font-medium text-white">Private</span> = server khusus (lebih aman), <span className="font-medium text-white">Public</span> = server bersama (lebih murah).</p>
+          
+          {/* Access Type Selection */}
+          <div className="flex items-center justify-between pt-2">
+            <Label className="text-base font-medium flex items-center gap-2">
+              <Package className="w-4 h-4 text-blue-500" />
+              Pilih Akses Panel
+            </Label>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                aria-pressed={accessType === "regular"}
+                onClick={() => {
+                  const next = "regular"
+                  setAccessType(next)
+                  if (!plans.find((p) => p.type === serverType && p.access === next && p.id === selectedPlan)) setSelectedPlan("")
+                }}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  accessType === "regular" ? "bg-blue-600 text-white" : "bg-dark-500 text-gray-300"
+                }`}
+              >
+                Akses Biasa
+              </button>
+              <button
+                type="button"
+                aria-pressed={accessType === "admin"}
+                onClick={() => {
+                  const next = "admin"
+                  setAccessType(next)
+                  if (!plans.find((p) => p.type === serverType && p.access === next && p.id === selectedPlan)) setSelectedPlan("")
+                }}
+                className={`px-3 py-1 rounded-md text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  accessType === "admin" ? "bg-blue-600 text-white" : "bg-dark-500 text-gray-300"
+                }`}
+              >
+                Akses Admin
+              </button>
+            </div>
+          </div>
+          <p className="text-xs text-gray-400 mt-2">Pilih akses: <span className="font-medium text-white">Akses Biasa</span> = panel standar, <span className="font-medium text-white">Akses Admin</span> = kelola multi user + fitur admin.</p>
           </div>
           <AnimatePresence mode="wait">
             <motion.div
@@ -291,9 +344,9 @@ export default function PanelForm() {
                       {/* Type badge */}
                       <div className="absolute top-3 left-3 z-20">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                          (plan as any).type === "private" ? "bg-purple-600 text-white" : "bg-green-600 text-white"
+                          plan.type === "private" ? "bg-purple-600 text-white" : "bg-green-600 text-white"
                         }`}>
-                          {(plan as any).type === "private" ? "Private" : "Public"}
+                          {plan.type === "private" ? "Private" : "Public"}
                         </span>
                       </div>
                       {selectedPlan === plan.id && (

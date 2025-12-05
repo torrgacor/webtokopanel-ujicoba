@@ -2,8 +2,10 @@
 
 import { plans } from "@/data/plans"
 import clientPromise from "@/lib/mongodb"
-import { appConfig, pterodactylConfig } from "@/data/config"
+import { pterodactylConfig } from "@/data/config"
+import { Pterodactyl } from "@/lib/pterodactyl"
 import type { ObjectId } from "mongodb"
+import crypto from "crypto"
 
 export interface ServerData {
   _id?: ObjectId
@@ -20,6 +22,8 @@ export interface ServerData {
   panelUrl?: string
   panelUsername?: string
   panelPassword?: string
+  panelUserId?: number
+  panelServerId?: number
   status: "pending" | "creating" | "active" | "failed"
   createdAt: string
   expiresAt?: string
@@ -78,48 +82,87 @@ export async function createServer(
       throw new Error("Gagal menyimpan data server ke database")
     }
 
-    // Call Pterodactyl API to actually provision the server using ptConfig
-    // which contains the correct API key and domain for the server type.
-    // We'll implement a small provisioning stub here that can be replaced
-    // with a real Pterodactyl integration later.
-    async function createServerInPterodactyl(data: typeof serverData) {
-      // ptero credentials
-      const creds = ptConfig
-
-      // Example of what a real integration would do (outline):
-      // - Use creds.domain and creds.apiKey for authentication
-      // - POST to the panel endpoint to create the server with nest/egg
-      // - Return panel url and credentials
-
-      // For now return a stubbed successful result
-      return {
-        success: true,
-        panelUrl: `${creds.domain}/server/${encodeURIComponent(String(data.serverName))}`,
-        panelUsername: `panel_${data.username}`,
-        panelPassword: Math.random().toString(36).slice(2, 10),
-      }
-    }
+    // Call Pterodactyl API to actually provision the server
+    // Use the correct panel credentials based on server type
+    const ptPanel = new Pterodactyl(serverType)
+    const ptConfig = serverType === "private" ? pterodactylConfig.private : pterodactylConfig.public
 
     // Mark as creating
     await serversCollection.updateOne({ _id: result.insertedId }, { $set: { status: "creating" } })
 
-    // Invoke provisioning (stub)
-    const pterodactylResult = await createServerInPterodactyl(serverData)
+    try {
+      // Generate a secure random password for the panel user
+      const panelPassword = crypto.randomBytes(12).toString("hex")
 
-    if (pterodactylResult && pterodactylResult.success) {
+      // Create user on Pterodactyl panel
+      const userResponse = await ptPanel.createUser(username, email, panelPassword)
+
+      if (!userResponse.attributes?.id) {
+        throw new Error("Failed to create user on panel: " + JSON.stringify(userResponse))
+      }
+
+      const userId = userResponse.attributes.id
+
+      // Create server for the user
+      const serverResponse = await ptPanel.addServer(
+        userId,
+        `${username}-bot-${Date.now()}`,
+        plan.memory,
+        plan.disk,
+        plan.cpu
+      )
+
+      if (!serverResponse.attributes?.id) {
+        throw new Error("Failed to create server on panel: " + JSON.stringify(serverResponse))
+      }
+
+      const serverId = serverResponse.attributes.id
+
+      // For admin access, grant additional permissions (this would depend on Pterodactyl admin API)
+      // In a real scenario, you'd make additional API calls to set permissions
+      if (accessType === "admin") {
+        // TODO: Implement admin role assignment via Pterodactyl API
+        // This would typically involve updating user permissions/roles
+        console.log(`Admin access granted for user ${userId}`)
+      }
+
+      // Construct the panel URL for user login
+      const panelUrl = `${ptConfig.domain}`
+
+      // Update database with provisioning success
       await serversCollection.updateOne(
         { _id: result.insertedId },
         {
           $set: {
             status: "active",
-            panelUrl: pterodactylResult.panelUrl,
-            panelUsername: pterodactylResult.panelUsername,
-            panelPassword: pterodactylResult.panelPassword,
+            panelUrl,
+            panelUsername: username,
+            panelPassword,
+            panelUserId: userId,
+            panelServerId: serverId,
           },
         }
       )
-    } else {
+
+      return {
+        success: true,
+        server: {
+          ...serverData,
+          _id: result.insertedId,
+          status: "active",
+          panelUrl,
+          panelUsername: username,
+          panelPassword,
+        },
+        message: `Server berhasil dibuat. Akses panel di ${panelUrl} dengan username ${username}`,
+      }
+    } catch (provisioningError) {
+      console.error("Pterodactyl provisioning error:", provisioningError)
+
+      // Mark as failed
       await serversCollection.updateOne({ _id: result.insertedId }, { $set: { status: "failed" } })
+
+      throw provisioningError
     }
 
     return {

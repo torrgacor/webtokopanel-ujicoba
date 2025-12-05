@@ -44,6 +44,8 @@ interface UserListResponse {
   data?: Array<{ attributes: UserAttributes }>
 }
 
+type PanelType = "private" | "public"
+
 export class Pterodactyl {
   private domain: string
   private apiKey: string
@@ -52,15 +54,18 @@ export class Pterodactyl {
   private egg: string
   private eggSamp: string
   private location: string
+  private panelType: PanelType
 
-  constructor() {
-    this.domain = pterodactylConfig.domain
-    this.apiKey = pterodactylConfig.apiKey
-    this.nests = pterodactylConfig.nests
+  constructor(panelType: PanelType = "private") {
+    this.panelType = panelType
+    const config = panelType === "private" ? pterodactylConfig.private : pterodactylConfig.public
+    this.domain = config.domain
+    this.apiKey = config.apiKey
+    this.nests = config.nests
     this.nestsGame = pterodactylConfig.nestsGame
-    this.egg = pterodactylConfig.egg
+    this.egg = config.egg
     this.eggSamp = pterodactylConfig.eggSamp
-    this.location = pterodactylConfig.location
+    this.location = config.location
   }
 
   async request<T>(endpoint: string, method = "GET", body: any = null): Promise<T> {
@@ -97,62 +102,62 @@ export class Pterodactyl {
     })
   }
 
-async addServer(
-  userId: number,
-  serverName: username,
-  memory: number,
-  disk: number,
-  cpu: number
-): Promise<ServerResponse> {
-  const eggData = await this.request<EggResponse>(`/nests/${this.nests}/eggs/${this.egg}`)
+  async addServer(
+    userId: number,
+    serverName: string,
+    memory: number,
+    disk: number,
+    cpu: number
+  ): Promise<ServerResponse> {
+    const eggData = await this.request<EggResponse>(`/nests/${this.nests}/eggs/${this.egg}`)
 
-  if (!eggData.attributes || !eggData.attributes.startup) {
-    throw new Error("Egg startup command is undefined.")
-  }
-
-  const dockerImage = eggData.attributes.docker_images["ghcr.io/parkervcp/yolks:nodejs_20"]
-  if (!dockerImage) {
-    throw new Error("NodeJS 20 docker image not available in this egg.")
-  }
-
-  return this.request<ServerResponse>("/servers", "POST", {
-    name: serverName,
-    description: "Order Panel? Kunjungi (https://panelshopv3.mts4you.biz.id)",
-    user: userId,
-    egg: Number.parseInt(this.egg),
-    docker_image: dockerImage,
-    startup: eggData.attributes.startup,
-    environment: {
-      GIT_ADDRESS: "",
-      BRANCH: "",
-      USERNAME: "",
-      ACCESS_TOKEN: "",
-      CMD_RUN: "npm start",
-      AUTO_UPDATE: "0",
-      NODE_PACKAGES: "",
-      UNNODE_PACKAGES: "",
-      CUSTOM_ENVIRONMENT_VARIABLES: "",
-      USER_UPLOAD: "true"
-    },
-    limits: {
-      memory,
-      swap: 0,
-      disk,
-      io: 500,
-      cpu
-    },
-    feature_limits: {
-      databases: 5,
-      backups: 5,
-      allocations: 1
-    },
-    deploy: {
-      locations: [Number.parseInt(this.location)],
-      dedicated_ip: false,
-      port_range: []
+    if (!eggData.attributes || !eggData.attributes.startup) {
+      throw new Error("Egg startup command is undefined.")
     }
-  })
-}
+
+    const dockerImage = eggData.attributes.docker_images["ghcr.io/parkervcp/yolks:nodejs_20"]
+    if (!dockerImage) {
+      throw new Error("NodeJS 20 docker image not available in this egg.")
+    }
+
+    return this.request<ServerResponse>("/servers", "POST", {
+      name: serverName,
+      description: "Order Panel? Kunjungi (https://panelshopv3.mts4you.biz.id)",
+      user: userId,
+      egg: Number.parseInt(this.egg),
+      docker_image: dockerImage,
+      startup: eggData.attributes.startup,
+      environment: {
+        GIT_ADDRESS: "",
+        BRANCH: "",
+        USERNAME: "",
+        ACCESS_TOKEN: "",
+        CMD_RUN: "npm start",
+        AUTO_UPDATE: "0",
+        NODE_PACKAGES: "",
+        UNNODE_PACKAGES: "",
+        CUSTOM_ENVIRONMENT_VARIABLES: "",
+        USER_UPLOAD: "true"
+      },
+      limits: {
+        memory,
+        swap: 0,
+        disk,
+        io: 500,
+        cpu
+      },
+      feature_limits: {
+        databases: 5,
+        backups: 5,
+        allocations: 1
+      },
+      deploy: {
+        locations: [Number.parseInt(this.location)],
+        dedicated_ip: false,
+        port_range: []
+      }
+    })
+  }
 
   async listServers(): Promise<Array<{ id: number; name: string; user: number }>> {
     const serversResponse = await this.request<ServerListResponse>("/servers")

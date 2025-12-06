@@ -1,0 +1,24 @@
+{
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "outputDirectory": ".next",
+  "env": {
+    "MONGODB_URI": "@mongodb_uri",
+    "SAKURU_API_ID": "@sakuru_api_id",
+    "SAKURU_API_KEY": "@sakuru_api_key",
+    "EMAIL_SENDER_USER": "@email_sender_user",
+    "EMAIL_SENDER_PASSWORD": "@email_sender_password",
+    "PTERODACTYL_PRIVATE_DOMAIN": "@pterodactyl_private_domain",
+    "PTERODACTYL_PRIVATE_API_KEY": "@pterodactyl_private_api_key",
+    "PTERODACTYL_PUBLIC_DOMAIN": "@pterodactyl_public_domain",
+    "PTERODACTYL_PUBLIC_API_KEY": "@pterodactyl_public_api_key",
+    "TELEGRAM_BOT_TOKEN": "@telegram_bot_token",
+    "TELEGRAM_OWNER_ID": "@telegram_owner_id"
+  },
+  "regions": ["sin1"],
+  "functions": {
+    "app/api/**": {
+      "maxDuration": 60
+    }
+  }
+}

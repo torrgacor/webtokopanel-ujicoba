@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=${MONGODB_URI}
+      - SAKURU_API_ID=${SAKURU_API_ID}
+      - SAKURU_API_KEY=${SAKURU_API_KEY}
+      - EMAIL_SENDER_USER=${EMAIL_SENDER_USER}
+      - EMAIL_SENDER_PASSWORD=${EMAIL_SENDER_PASSWORD}
+      - PTERODACTYL_PRIVATE_DOMAIN=${PTERODACTYL_PRIVATE_DOMAIN}
+      - PTERODACTYL_PRIVATE_API_KEY=${PTERODACTYL_PRIVATE_API_KEY}
+      - PTERODACTYL_PUBLIC_DOMAIN=${PTERODACTYL_PUBLIC_DOMAIN}
+      - PTERODACTYL_PUBLIC_API_KEY=${PTERODACTYL_PUBLIC_API_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_OWNER_ID=${TELEGRAM_OWNER_ID:-}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+# Gunakan dengan: docker-compose --env-file .env.production up -d

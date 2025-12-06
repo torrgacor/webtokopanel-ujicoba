@@ -85,7 +85,6 @@ export async function createServer(
     // Call Pterodactyl API to actually provision the server
     // Use the correct panel credentials based on server type
     const ptPanel = new Pterodactyl(serverType)
-    const ptConfig = serverType === "private" ? pterodactylConfig.private : pterodactylConfig.public
 
     // Mark as creating
     await serversCollection.updateOne({ _id: result.insertedId }, { $set: { status: "creating" } })

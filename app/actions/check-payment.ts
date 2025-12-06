@@ -67,7 +67,7 @@ export async function checkPaymentStatus(transactionId: string) {
         cpu: plan.cpu,
         planId: payment.planId,
         createdAt: payment.createdAt,
-        panelType: payment.panelType,
+        panelType: payment.panelType as "private" | "public",
         transactionId,
       })
 
@@ -76,11 +76,13 @@ export async function checkPaymentStatus(transactionId: string) {
         return { success: false, error: "Gagal membuat panel" }
       }
 
-      const panelDetails = {
+      const panelDetails: any = {
         username: payment.username,
         password: panelResult.password,
         serverId: panelResult.serverId,
       }
+
+      if (panelResult.panelUrl) panelDetails.panelUrl = panelResult.panelUrl
 
       await updatePaymentStatus(transactionId, "completed", panelDetails)
       revalidatePath(`/invoice/${transactionId}`)

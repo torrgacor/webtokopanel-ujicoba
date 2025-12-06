@@ -2,9 +2,9 @@
 
 import { Pterodactyl } from "@/lib/pterodactyl"
 
-export async function checkUserExists(username: string, email: string) {
+export async function checkUserExists(username: string, email: string, panelType: "private" | "public" = "private") {
   try {
-    const pterodactyl = new Pterodactyl()
+    const pterodactyl = new Pterodactyl(panelType)
     const users = await pterodactyl.listUsers()
 
     const usernameExists = users.some((user) => user.username.toLowerCase() === username.toLowerCase())

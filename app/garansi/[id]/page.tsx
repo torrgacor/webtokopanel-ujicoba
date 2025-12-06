@@ -93,8 +93,8 @@ export default function GaransiDetailPage() {
       return setError("Plan tidak ditemukan, hubungi admin.")
     }
 
-    // Cek apakah user/email sudah ada di panel
-    const check = await checkUserExists(transaction.username, email)
+    // Cek apakah user/email sudah ada di panel (cek di panel yang sama dengan transaksi)
+    const check = await checkUserExists(transaction.username, email, (transaction.panelType as "private" | "public") || "private")
     if (!check.success) throw new Error("Gagal memeriksa pengguna di panel")
 
     if (check.usernameExists || check.emailExists) {
@@ -111,6 +111,7 @@ export default function GaransiDetailPage() {
       cpu: plan.cpu,
       planId: transaction.planId,
       createdAt: transaction.createdAt,
+      panelType: transaction.panelType as "private" | "public",
     })
 
     if (!panel.success) throw new Error("Gagal membuat panel baru")

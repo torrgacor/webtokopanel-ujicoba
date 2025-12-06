@@ -16,8 +16,9 @@ export async function sendPanelDetailsEmail(
   password: string,
   serverId: number,
   planName: string,
+  panelUrl?: string,
 ) {
-  const panelUrl = pterodactylConfig.domain
+  const panelLink = panelUrl || pterodactylConfig.public.domain
 
   const mailOptions = {
     from: appConfig.emailSender.from,
@@ -38,11 +39,11 @@ export async function sendPanelDetailsEmail(
             <p><strong>Username:</strong> ${username}</p>
             <p><strong>Password:</strong> <code style="background-color: #f0f0f0; padding: 2px 4px; border-radius: 3px;">${password}</code></p>
             <p><strong>Server ID:</strong> ${serverId}</p>
-            <p><strong>URL Panel:</strong> <a href="${panelUrl}" style="color: #e53e3e;">${panelUrl}</a></p>
+            <p><strong>URL Panel:</strong> <a href="${panelLink}" style="color: #e53e3e;">${panelLink}</a></p>
           </div>
           
           <div style="text-align: center; margin: 20px 0;">
-            <a href="${panelUrl}" style="background-color: #e53e3e; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Login Sekarang</a>
+            <a href="${panelLink}" style="background-color: #e53e3e; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Login Sekarang</a>
           </div>
           
           <p>Silakan login ke panel dengan kredensial di atas. Jika Anda memiliki pertanyaan atau membutuhkan bantuan, jangan ragu untuk menghubungi tim dukungan kami.</p>

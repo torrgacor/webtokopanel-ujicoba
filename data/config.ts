@@ -1,60 +1,59 @@
+// Read configuration from environment variables to avoid committing secrets.
+// Provide sensible defaults where appropriate (but do NOT commit production secrets).
 export const pterodactylConfig = {
-  // Private Server Configuration
   private: {
-    domain: "https://tokopanel157-private216.mts4you.biz.id",
-    apiKey: "ptla_ms1X6SBb1SZQcSJrtX4xx16O9FwZHWBXbpsEPknrke1",
-    nests: "5", 
-    egg: "15", 
-    location: "1", // location panel 
+    domain: process.env.PTERODACTYL_PRIVATE_DOMAIN || "",
+    apiKey: process.env.PTERODACTYL_PRIVATE_API_KEY || "",
+    nests: process.env.PTERODACTYL_PRIVATE_NESTS || "5",
+    egg: process.env.PTERODACTYL_PRIVATE_EGG || "15",
+    location: process.env.PTERODACTYL_PRIVATE_LOCATION || "1",
   },
-  // Public Server Configuration
   public: {
-    domain: "https://tokopanel157-public209.mts4you.biz.id", // ubah sesuai domain public panel
-    apiKey: "ptla_ueVeAgspM7fITWiHFy6KLkM44w2M1utAxK5xyDY7EQZ", // ubah sesuai public API key
-    nests: "5", 
-    egg: "15", 
-    location: "1", // location panel 
+    domain: process.env.PTERODACTYL_PUBLIC_DOMAIN || "",
+    apiKey: process.env.PTERODACTYL_PUBLIC_API_KEY || "",
+    nests: process.env.PTERODACTYL_PUBLIC_NESTS || "5",
+    egg: process.env.PTERODACTYL_PUBLIC_EGG || "15",
+    location: process.env.PTERODACTYL_PUBLIC_LOCATION || "1",
   },
-  // Shared settings (not needed if different)
-  nestsGame: "2", // ga usah di isi, ga perlu
-  eggSamp: "16", // ga usah di isi, ga perlu
+  nestsGame: process.env.PTERODACTYL_NESTS_GAME || "2",
+  eggSamp: process.env.PTERODACTYL_EGG_SAMP || "16",
 }
 
 export const appConfig = {
-  whatsappGroupLink: "https://whatsapp.com/channel/0029VbBHzkt1t90Z4H55f638", // link group
-  nameHost: "MTS4YOU XD", // nama host 
-  feeMin: 10, //minimal fee
-  feeMax: 50, // max fee 
+  whatsappGroupLink: process.env.NEXT_PUBLIC_WHATSAPP_GROUP || "",
+  nameHost: process.env.NEXT_PUBLIC_APP_NAME || "My Panel Shop",
+  feeMin: Number(process.env.APP_FEE_MIN || "10"),
+  feeMax: Number(process.env.APP_FEE_MAX || "50"),
   garansi: {
-    warrantyDays: 12, // Limit hari
-    replaceLimit: 3, // Limit replace/claim
+    warrantyDays: Number(process.env.GARANSI_DAYS || "12"),
+    replaceLimit: Number(process.env.GARANSI_REPLACE_LIMIT || "3"),
   },
   pay: {
-    api_key: "KEY-Dq4VmT7PQorsWotGvyczJnsBfcx",
-    api_id: "ID-723482138356",
+    api_key: process.env.SAKURU_API_KEY || "",
+    api_id: process.env.SAKURU_API_ID || "",
   },
   emailSender: {
-    host: "mail.mts4youxd425@gmail.com", // Gmail host
-    port: 587, // ga usa di ubah, ga guna 
-    secure: false, // false in
+    host: process.env.EMAIL_SENDER_HOST || "",
+    port: Number(process.env.EMAIL_SENDER_PORT || "587"),
+    secure: process.env.EMAIL_SENDER_SECURE === "true" || false,
     auth: {
-      user: "mail.mts4youxd425@gmail.com", // Gmail buat ngirim ke Gmail buyer 
-      pass: "joernukccwnrzpww", // sandi aplikasi 
+      user: process.env.EMAIL_SENDER_USER || "",
+      pass: process.env.EMAIL_SENDER_PASSWORD || "",
     },
-    from: "Tukang Panel <mail.mts4youxd425@gmail.com>",
-  }, // ganti sendiri 
+    from: process.env.EMAIL_SENDER_FROM || `Panel <${process.env.EMAIL_SENDER_USER || "no-reply@example.com"}>`,
+  },
   telegram: {
-    botToken: "",
-    ownerId: "",
+    botToken: process.env.TELEGRAM_BOT_TOKEN || "",
+    ownerId: process.env.TELEGRAM_OWNER_ID || "",
   },
   mongodb: {
-    uri: "mongodb+srv://tokspanels:tokspanels123@congor.s4haaui.mongodb.net/?retryWrites=true&w=majority&appName=Congor", // url mongo mu
-dbName: "Congor",
+    uri: process.env.MONGODB_URI || "",
+    dbName: process.env.MONGODB_DBNAME || "webtokopanel",
   },
   socialMedia: {
-    whatsapp: "https://wa.me/6289513452028",
-    telegram: "https://t.me/mts4youxd",
-    tiktok: "https://www.tiktok.com/@mts4you.xd",
-    instagram: "https://www.instagram.com/ig_mtsstore"
+    whatsapp: process.env.SOCIAL_WHATSAPP || "",
+    telegram: process.env.SOCIAL_TELEGRAM || "",
+    tiktok: process.env.SOCIAL_TIKTOK || "",
+    instagram: process.env.SOCIAL_INSTAGRAM || "",
   }
 }

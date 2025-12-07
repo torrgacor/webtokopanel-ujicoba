@@ -124,7 +124,7 @@ export default function PanelForm() {
       setShowModal(true)
 
       // Check if username or email already exists
-      const result = await checkUserExists(username, email, serverType)
+      const result = await checkUserExists(username, email)
 
       if (!result.success) {
         throw new Error(result.error || "Gagal memeriksa ketersediaan username dan email")
@@ -160,7 +160,7 @@ export default function PanelForm() {
     setIsLoading(true)
 
     try {
-      const result = await createPayment(selectedPlan, username, email, serverType, accessType)
+      const result = await createPayment(selectedPlan, username, email)
 
       if (!result.success) {
         throw new Error(result.error)

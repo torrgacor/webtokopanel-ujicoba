@@ -1,7 +1,6 @@
 "use server"
 
 import { Pterodactyl } from "@/lib/pterodactyl"
-import { pterodactylConfig } from "@/data/config"
 import { generatePassword } from "@/lib/utils"
 import { sendPanelDetailsEmail } from "@/lib/email-service"
 import { sendTelegramNotification } from "@/lib/telegram-service"
@@ -16,15 +15,14 @@ type PanelData = {
   planId: string
   createdAt: string
 }
-export async function createPanel(data: PanelData & { panelType?: "private" | "public"; transactionId?: string }) {
+
+export async function createPanel(data: PanelData) {
   try {
     const { username, email, memory, disk, cpu, planId, createdAt } = data
 
     const password = generatePassword(10)
-    const panelType = data.panelType || "private"
-    const pterodactyl = new Pterodactyl(panelType)
-    const panelUrl = panelType === "private" ? pterodactylConfig.private.domain : pterodactylConfig.public.domain
-
+    const pterodactyl = new Pterodactyl()
+  
     console.log(`Creating user ${username} with email ${email}...`)
     const userResponse = await pterodactyl.createUser(username, email, password)
 
@@ -56,7 +54,7 @@ export async function createPanel(data: PanelData & { panelType?: "private" | "p
     console.log(`Starting notification process for user ${username}...`)
 
     console.log(`Sending email notification to ${email}...`)
-    sendPanelDetailsEmail(email, username, password, serverId, plan.name, panelUrl)
+    sendPanelDetailsEmail(email, username, password, serverId, plan.name)
       .then((result) => {
         if (result.success) {
           console.log(`Email notification sent successfully to ${email}`)
@@ -87,7 +85,6 @@ export async function createPanel(data: PanelData & { panelType?: "private" | "p
       userId: userId,
       serverId: serverId,
       password: password,
-      panelUrl: panelUrl,
     }
   } catch (error) {
     console.error("Error creating panel:", error)

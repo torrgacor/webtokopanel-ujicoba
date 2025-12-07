@@ -24,13 +24,11 @@ export interface PaymentData {
   total: number
   qrImageUrl: string
   expirationTime: string
-  panelType?: "private" | "public"
-  accessType?: "regular" | "admin"
   status: "pending" | "paid" | "completed" | "failed"
   createdAt: string
 }
 
-export async function createPayment(planId: string, username: string, email: string, panelType: "private" | "public" = "private", accessType: "regular" | "admin" = "regular") {
+export async function createPayment(planId: string, username: string, email: string) {
   try {
     const plan = plans.find((p) => p.id === planId)
     if (!plan) throw new Error("Plan tidak ditemukan")
@@ -99,8 +97,6 @@ export async function createPayment(planId: string, username: string, email: str
       qrImageUrl: pay.qr,
       expirationTime: new Date(pay.expired).toISOString(),
       status: pay.payment_status === "pending" ? "pending" : "failed",
-      panelType,
-      accessType,
       createdAt: new Date().toISOString(),
     }
 

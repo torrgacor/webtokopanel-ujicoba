@@ -106,14 +106,14 @@ export function StatusModal({ isOpen, onClose, type, title, message, panelDetail
 
                 <div className="space-y-3">
                     <div>
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-gray-400 text-sm">URL Panel:</span>
-                        <CopyButton text={panelDetails?.panelUrl || pterodactylConfig.public.domain} />
-                      </div>
-                      <div className="bg-dark-600 px-3 py-2 rounded text-gray-300 text-sm font-mono break-all">
-                        {panelDetails?.panelUrl || pterodactylConfig.public.domain}
-                      </div>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-gray-400 text-sm">URL Panel:</span>
+                      <CopyButton text={pterodactylConfig.domain} />
                     </div>
+                      <div className="bg-dark-600 px-3 py-2 rounded text-gray-300 text-sm font-mono break-all">
+                      {pterodactylConfig.domain}
+                    </div>
+                  </div>
 
                   <div>
                     <div className="flex justify-between items-center mb-1">
@@ -148,7 +148,7 @@ export function StatusModal({ isOpen, onClose, type, title, message, panelDetail
 
                 <div className="mt-4">
                   <a
-                    href={panelDetails?.panelUrl || pterodactylConfig.public.domain}
+                    href={pterodactylConfig.domain}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition-colors"

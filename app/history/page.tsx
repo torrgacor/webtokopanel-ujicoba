@@ -521,10 +521,10 @@ export default function HistoryPage() {
                         <div>
                           <div className="flex justify-between items-center mb-1">
                             <span className="text-gray-400 text-sm">URL Panel:</span>
-                            <CopyButton text={selectedTransaction.panelDetails?.panelUrl || pterodactylConfig.public.domain || "https://host.kuromi.my.id"} />
+                            <CopyButton text={pterodactylConfig.domain || "https://host.kuromi.my.id"} />
                           </div>
                           <div className="bg-dark-600 px-3 py-2 rounded text-gray-300 text-sm font-mono break-all">
-                            {selectedTransaction.panelDetails?.panelUrl || pterodactylConfig.public.domain || "https://host.kuromi.my.id"}
+                            {pterodactylConfig.domain || "https://host.kuromi.my.id"}
                           </div>
                         </div>
 
@@ -561,7 +561,7 @@ export default function HistoryPage() {
 
                       <div className="mt-4">
                         <a
-                          href={selectedTransaction.panelDetails?.panelUrl || pterodactylConfig.public.domain || "https://host.kuromi.my.id"}
+                          href={pterodactylConfig.domain || "https://host.kuromi.my.id"}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded transition-colors"

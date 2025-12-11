@@ -1,4 +1,4 @@
-export const pterodactylConfig = {
+export const pterodactylConfig = { 
   // Private Server Configuration
   private: {
     domain: "https://tokopanel157-private216.mts4you.biz.id",

@@ -16,7 +16,6 @@ export async function sendPanelDetailsEmail(
   password: string,
   serverId: number,
   planName: string,
-  panelUrl?: string,
 ) {
   const panelUrl = pterodactylConfig.domain
 
